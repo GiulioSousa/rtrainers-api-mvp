@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Project ###
+# Credenciais e variáveis de ambiente
+.env
+src/main/resources/credentials-dev.json
