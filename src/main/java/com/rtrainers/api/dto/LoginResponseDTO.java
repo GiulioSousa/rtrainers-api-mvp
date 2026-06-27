@@ -3,14 +3,14 @@ package com.rtrainers.api.dto;
 public class LoginResponseDTO {
 
     private String token;
-    private String nomeProfesor;
+    private String nomeProfessor;
 
     public LoginResponseDTO() {
     }
 
     public LoginResponseDTO(String token, String nomeProfessor) {
         this.token = token;
-        this.nomeProfesor = nomeProfessor;
+        this.nomeProfessor = nomeProfessor;
     }
 
     public String getToken() {
@@ -22,10 +22,10 @@ public class LoginResponseDTO {
     }
 
     public String getNomeProfessor() {
-        return nomeProfesor;
+        return nomeProfessor;
     }
 
     public void setNomeProfessor(String nomeProfessor) {
-        this.nomeProfesor = nomeProfessor;
+        this.nomeProfessor = nomeProfessor;
     }
 }
