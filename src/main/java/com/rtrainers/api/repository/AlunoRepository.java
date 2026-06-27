@@ -43,7 +43,6 @@ public class AlunoRepository {
             aluno.setPreferencia(linha.size() > 4 ? linha.get(4).toString() : "");
             aluno.setObjetivo(linha.size() > 5 ? linha.get(5).toString() : "");
             aluno.setObservacoes(linha.size() > 6 ? linha.get(6).toString() : "");
-            aluno.setAtivo(linha.size() > 7 ? Boolean.parseBoolean(linha.get(7).toString()) : true);
             alunos.add(aluno);
         }
 

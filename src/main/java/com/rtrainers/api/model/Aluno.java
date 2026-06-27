@@ -9,13 +9,12 @@ public class Aluno {
     private String preferencia;
     private String objetivo;
     private String observacoes;
-    private Boolean ativo;
 
     public Aluno() {
     }
 
     public Aluno(Integer id, String nome, String estagio, String lesao,
-            String preferencia, String objetivo, String observacoes, Boolean ativo) {
+            String preferencia, String objetivo, String observacoes) {
         this.id = id;
         this.nome = nome;
         this.estagio = estagio;
@@ -23,7 +22,6 @@ public class Aluno {
         this.preferencia = preferencia;
         this.objetivo = objetivo;
         this.observacoes = observacoes;
-        this.ativo = ativo;
     }
 
     public Integer getId() {
@@ -80,13 +78,5 @@ public class Aluno {
 
     public void setObservacoes(String observacoes) {
         this.observacoes = observacoes;
-    }
-
-    public Boolean getAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(Boolean ativo) {
-        this.ativo = ativo;
     }
 }
