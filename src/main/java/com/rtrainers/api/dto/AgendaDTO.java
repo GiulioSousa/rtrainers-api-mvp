@@ -1,53 +1,43 @@
 package com.rtrainers.api.dto;
 
-import java.time.LocalTime;
-
 public class AgendaDTO {
 
-    private Integer id;
-    private Integer alunoId;
-    private Integer professorId;
+    private String nomeAluno;
+    private String nomeProfessor;
     private String turno;
-    private LocalTime horario;
+    private String horario;
     private String diaSemana;
+    private String estimuloTreino;
     private AlunoDTO aluno;
 
     public AgendaDTO() {
     }
 
-    public AgendaDTO(Integer id, Integer alunoId, Integer professorId,
-            String turno, LocalTime horario, String diaSemana, AlunoDTO aluno) {
-        this.id = id;
-        this.alunoId = alunoId;
-        this.professorId = professorId;
+    public AgendaDTO(String nomeAluno, String nomeProfessor, String turno, String horario, String diaSemana, String estimuloTreino, AlunoDTO aluno)
+    {
+        this.nomeAluno = nomeAluno;
+        this.nomeProfessor = nomeProfessor;
         this.turno = turno;
         this.horario = horario;
         this.diaSemana = diaSemana;
+        this.estimuloTreino = estimuloTreino;
         this.aluno = aluno;
     }
 
-    public Integer getId() {
-        return id;
+    public String getNomeAluno() {
+        return nomeAluno;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setNomeAluno(String nomeAluno) {
+        this.nomeAluno = nomeAluno;
     }
 
-    public Integer getAlunoId() {
-        return alunoId;
+    public String getNomeProfessor() {
+        return nomeProfessor;
     }
 
-    public void setAlunoId(Integer alunoId) {
-        this.alunoId = alunoId;
-    }
-
-    public Integer getProfessorId() {
-        return professorId;
-    }
-
-    public void setProfessorId(Integer professorId) {
-        this.professorId = professorId;
+    public void setNomeProfessor(String nomeProfessor) {
+        this.nomeProfessor = nomeProfessor;
     }
 
     public String getTurno() {
@@ -58,11 +48,11 @@ public class AgendaDTO {
         this.turno = turno;
     }
 
-    public LocalTime getHorario() {
+    public String getHorario() {
         return horario;
     }
 
-    public void setHorario(LocalTime horario) {
+    public void setHorario(String horario) {
         this.horario = horario;
     }
 
@@ -72,6 +62,14 @@ public class AgendaDTO {
 
     public void setDiaSemana(String diaSemana) {
         this.diaSemana = diaSemana;
+    }
+
+    public String getEstimuloTreino() {
+        return estimuloTreino;
+    }
+
+    public void setEstimuloTreino(String estimuloTreino) {
+        this.estimuloTreino = estimuloTreino;
     }
 
     public AlunoDTO getAluno() {
