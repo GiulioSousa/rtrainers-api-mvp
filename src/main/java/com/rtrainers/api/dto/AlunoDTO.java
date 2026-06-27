@@ -10,9 +10,6 @@ public class AlunoDTO {
     private String objetivo;
     private String observacoes;
 
-    public AlunoDTO() {
-    }
-
     public AlunoDTO(
             Integer id,
             String nome,
