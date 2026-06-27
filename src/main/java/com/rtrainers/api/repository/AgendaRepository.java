@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,13 +18,34 @@ public class AgendaRepository {
     @Value("${google.sheets.id}")
     private String planilhaId;
 
+    @Value("${google.sheets.agendamentos.manha.aba}")
+    private String abaManha;
+
+    @Value("${google.sheets.agendamentos.manha.range}")
+    private String rangeManha;
+
+    @Value("${google.sheets.agendamentos.tarde.aba}")
+    private String abaTarde;
+
+    @Value("${google.sheets.agendamentos.tarde.range}")
+    private String rangeTarde;
+
     public AgendaRepository(Sheets clienteSheets) {
         this.clienteSheets = clienteSheets;
     }
 
     public List<Agenda> buscarTodos() throws IOException {
+        List<Agenda> agendas = new ArrayList<>();
+        agendas.addAll(lerAba(abaManha, rangeManha, "manhã"));
+        agendas.addAll(lerAba(abaTarde, rangeTarde, "tarde/noite"));
+        return agendas;
+    }
+
+    private List<Agenda> lerAba(String aba, String range, String turno) throws IOException {
+        String intervalo = aba + "!" + range;
+
         ValueRange resposta = clienteSheets.spreadsheets().values()
-                .get(planilhaId, "Agendamentos!A2:G")
+                .get(planilhaId, intervalo)
                 .execute();
 
         List<List<Object>> linhas = resposta.getValues();
@@ -35,23 +55,51 @@ public class AgendaRepository {
             return agendas;
         }
 
+        String horarioAtual = "";
+        String professorAtual = "";
+        String estimuloAtual = "";
+
         for (List<Object> linha : linhas) {
+            if (linha.isEmpty()) {
+                continue;
+            }
+
+            String horario = obterValor(linha, 0);
+            String professor = obterValor(linha, 1);
+            String estimulo = obterValor(linha, 8);
+
+            if (!horario.isBlank()) horarioAtual = horario;
+            if (!professor.isBlank()) professorAtual = professor;
+            if (!estimulo.isBlank()) estimuloAtual = estimulo;
+
+            String nomeAluno = obterValor(linha, 2);
+            if (nomeAluno.isBlank()) {
+                continue;
+            }
+
             Agenda agenda = new Agenda();
-            agenda.setId(Integer.parseInt(linha.get(0).toString()));
-            agenda.setAlunoId(Integer.parseInt(linha.get(1).toString()));
-            agenda.setProfessorId(Integer.parseInt(linha.get(2).toString()));
-            agenda.setTurno(linha.size() > 3 ? linha.get(3).toString() : "");
-            agenda.setHorario(linha.size() > 4 ? LocalTime.parse(linha.get(4).toString()) : null);
-            agenda.setDiaSemana(linha.size() > 5 ? linha.get(5).toString() : "");
+            agenda.setNomeAluno(nomeAluno);
+            agenda.setNomeProfessor(professorAtual);
+            agenda.setTurno(turno);
+            agenda.setHorario(horarioAtual);
+            agenda.setDiaSemana("");
+            agenda.setEstimuloTreino(estimuloAtual);
             agendas.add(agenda);
         }
 
         return agendas;
     }
 
-    public List<Agenda> buscarPorProfessor(Integer professorId) throws IOException {
+    private String obterValor(List<Object> linha, int indice) {
+        if (linha.size() > indice && linha.get(indice) != null) {
+            return linha.get(indice).toString().trim();
+        }
+        return "";
+    }
+
+    public List<Agenda> buscarPorProfessor(String nomeProfessor) throws IOException {
         return buscarTodos().stream()
-                .filter(agenda -> agenda.getProfessorId().equals(professorId))
+                .filter(agenda -> agenda.getNomeProfessor().equalsIgnoreCase(nomeProfessor))
                 .toList();
     }
 
