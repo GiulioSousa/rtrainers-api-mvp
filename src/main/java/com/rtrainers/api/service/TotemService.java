@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -35,22 +36,26 @@ public class TotemService {
         LocalTime agora = LocalTime.now();
         LocalTime limiteInicio = agora.minusHours(1);
 
+        DateTimeFormatter formatador = DateTimeFormatter.ofPattern("H:mm");
+
         List<Agenda> agendas = agendaRepository.buscarTodos().stream()
                 .filter(agenda -> {
-                    LocalTime horario = agenda.getHorario();
-                    return horario != null
-                            && !horario.isBefore(limiteInicio)
-                            && !horario.isAfter(agora);
+                    try {
+                        LocalTime horario = LocalTime.parse(agenda.getHorario(), formatador);
+                        return !horario.isBefore(limiteInicio) && !horario.isAfter(agora);
+                    } catch (Exception e) {
+                        return false;
+                    }
                 })
                 .toList();
 
         return agendas.stream().map(agenda -> {
             AlunoDTO alunoDTO = null;
             try {
-                Aluno aluno = alunoRepository.buscarPorId(agenda.getAlunoId());
+                Aluno aluno = alunoRepository.buscarPorNome(agenda.getNomeAluno());
                 if (aluno != null) {
                     alunoDTO = new AlunoDTO(
-                            aluno.getId(),
+                            null,
                             aluno.getNome(),
                             null,
                             null,
@@ -63,12 +68,12 @@ public class TotemService {
             }
 
             return new AgendaDTO(
-                    agenda.getId(),
-                    agenda.getAlunoId(),
-                    agenda.getProfessorId(),
+                    agenda.getNomeAluno(),
+                    agenda.getNomeProfessor(),
                     agenda.getTurno(),
                     agenda.getHorario(),
                     agenda.getDiaSemana(),
+                    agenda.getEstimuloTreino(),
                     alunoDTO);
         }).toList();
     }
@@ -76,14 +81,13 @@ public class TotemService {
     public void registrarAvaliacao(AvaliacaoDTO dto) throws IOException {
         LocalDate hoje = LocalDate.now();
 
-        if (avaliacaoRepository.existeAvaliacaoNoDia(dto.getAlunoId(), hoje)) {
+        if (avaliacaoRepository.existeAvaliacaoNoDia(dto.getNomeAluno(), hoje)) {
             throw new RuntimeException("Avaliação já registrada para este aluno hoje");
         }
 
         Avaliacao avaliacao = new Avaliacao();
-        avaliacao.setSessaoId(dto.getSessaoId());
-        avaliacao.setAlunoId(dto.getAlunoId());
-        avaliacao.setProfessorId(dto.getProfessorId());
+        avaliacao.setNomeAluno(dto.getNomeAluno());
+        avaliacao.setNomeProfessor(dto.getNomeProfessor());
         avaliacao.setNotaAula(dto.getNotaAula());
         avaliacao.setNotaProfessor(dto.getNotaProfessor());
         avaliacao.setTags(dto.getTags());

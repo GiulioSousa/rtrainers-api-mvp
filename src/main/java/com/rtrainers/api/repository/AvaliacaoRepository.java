@@ -20,13 +20,21 @@ public class AvaliacaoRepository {
     @Value("${google.sheets.id}")
     private String planilhaId;
 
+    @Value("${google.sheets.avaliacoes.aba}")
+    private String abaAvaliacao;
+
+    @Value("${google.sheets.avaliacoes.range}")
+    private String rangeAvaliacao;
+
     public AvaliacaoRepository(Sheets clienteSheets) {
         this.clienteSheets = clienteSheets;
     }
 
     public List<Avaliacao> buscarTodos() throws IOException {
+        String intervalo = abaAvaliacao + "!" + rangeAvaliacao;
+
         ValueRange resposta = clienteSheets.spreadsheets().values()
-                .get(planilhaId, "Avaliacoes!A2:H")
+                .get(planilhaId, intervalo)
                 .execute();
 
         List<List<Object>> linhas = resposta.getValues();
@@ -37,40 +45,48 @@ public class AvaliacaoRepository {
         }
 
         for (List<Object> linha : linhas) {
+            if (linha.isEmpty() || linha.get(0).toString().isBlank()) {
+                continue;
+            }
+
             Avaliacao avaliacao = new Avaliacao();
-            avaliacao.setId(Integer.parseInt(linha.get(0).toString()));
-            avaliacao.setSessaoId(Integer.parseInt(linha.get(1).toString()));
-            avaliacao.setAlunoId(Integer.parseInt(linha.get(2).toString()));
-            avaliacao.setProfessorId(Integer.parseInt(linha.get(3).toString()));
-            avaliacao.setNotaAula(linha.size() > 4 ? Integer.parseInt(linha.get(4).toString()) : null);
-            avaliacao.setNotaProfessor(linha.size() > 5 ? Integer.parseInt(linha.get(5).toString()) : null);
-            avaliacao.setTags(linha.size() > 6 ? Arrays.asList(linha.get(6).toString().split(",")) : new ArrayList<>());
-            avaliacao.setData(linha.size() > 7 ? LocalDate.parse(linha.get(7).toString()) : null);
+            avaliacao.setNomeAluno(linha.get(0).toString());
+            avaliacao.setNomeProfessor(linha.size() > 1 ? linha.get(1).toString() : "");
+            avaliacao.setNotaAula(linha.size() > 2 && !linha.get(2).toString().isBlank()
+                    ? Integer.parseInt(linha.get(2).toString()) : null);
+            avaliacao.setNotaProfessor(linha.size() > 3 && !linha.get(3).toString().isBlank()
+                    ? Integer.parseInt(linha.get(3).toString()) : null);
+            avaliacao.setTags(linha.size() > 4 && !linha.get(4).toString().isBlank()
+                    ? Arrays.asList(linha.get(4).toString().split(",")) : new ArrayList<>());
+            avaliacao.setData(linha.size() > 5 && !linha.get(5).toString().isBlank()
+                    ? LocalDate.parse(linha.get(5).toString()) : null);
             avaliacoes.add(avaliacao);
         }
 
         return avaliacoes;
     }
 
-    public boolean existeAvaliacaoNoDia(Integer alunoId, LocalDate data) throws IOException {
+    public boolean existeAvaliacaoNoDia(String nomeAluno, LocalDate data) throws IOException {
         return buscarTodos().stream()
-                .anyMatch(a -> a.getAlunoId().equals(alunoId) && a.getData().equals(data));
+                .anyMatch(a -> a.getNomeAluno().equalsIgnoreCase(nomeAluno) 
+                && data.equals(a.getData()));
     }
 
     public void salvar(Avaliacao avaliacao) throws IOException {
         ValueRange corpo = new ValueRange()
                 .setValues(Arrays.asList(Arrays.asList(
                         "",
-                        avaliacao.getSessaoId(),
-                        avaliacao.getAlunoId(),
-                        avaliacao.getProfessorId(),
+                        avaliacao.getNomeAluno(),
+                        avaliacao.getNomeProfessor(),
                         avaliacao.getNotaAula(),
                         avaliacao.getNotaProfessor(),
                         String.join(",", avaliacao.getTags()),
                         avaliacao.getData().toString())));
 
+                        String intervaloEscrita = abaAvaliacao + "!" + rangeAvaliacao;
+
         clienteSheets.spreadsheets().values()
-                .append(planilhaId, "Avaliacoes!A:H", corpo)
+                .append(planilhaId, intervaloEscrita, corpo)
                 .setValueInputOption("RAW")
                 .setInsertDataOption("INSERT_ROWS")
                 .execute();

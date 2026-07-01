@@ -5,10 +5,8 @@ import java.util.List;
 
 public class Avaliacao {
 
-    private Integer id;
-    private Integer sessaoId;
-    private Integer alunoId;
-    private Integer professorId;
+    private String nomeAluno;
+    private String nomeProfessor;
     private Integer notaAula;
     private Integer notaProfessor;
     private List<String> tags;
@@ -17,48 +15,30 @@ public class Avaliacao {
     public Avaliacao() {
     }
 
-    public Avaliacao(Integer id, Integer sessaoId, Integer alunoId, Integer professorId,
+    public Avaliacao(String nomeAluno, String nomeProfessor,
             Integer notaAula, Integer notaProfessor, List<String> tags, LocalDate data) {
-        this.id = id;
-        this.sessaoId = sessaoId;
-        this.alunoId = alunoId;
-        this.professorId = professorId;
+        this.nomeAluno = nomeAluno;
+        this.nomeProfessor = nomeProfessor;
         this.notaAula = notaAula;
         this.notaProfessor = notaProfessor;
         this.tags = tags;
         this.data = data;
     }
 
-    public Integer getId() {
-        return id;
+    public String getNomeAluno() {
+        return nomeAluno;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setNomeAluno(String nomeAluno) {
+        this.nomeAluno = nomeAluno;
     }
 
-    public Integer getSessaoId() {
-        return sessaoId;
+    public String getNomeProfessor() {
+        return nomeProfessor;
     }
 
-    public void setSessaoId(Integer sessaoId) {
-        this.sessaoId = sessaoId;
-    }
-
-    public Integer getAlunoId() {
-        return alunoId;
-    }
-
-    public void setAlunoId(Integer alunoId) {
-        this.alunoId = alunoId;
-    }
-
-    public Integer getProfessorId() {
-        return professorId;
-    }
-
-    public void setProfessorId(Integer professorId) {
-        this.professorId = professorId;
+    public void setNomeProfessor(String nomeProfessor) {
+        this.nomeProfessor = nomeProfessor;
     }
 
     public Integer getNotaAula() {

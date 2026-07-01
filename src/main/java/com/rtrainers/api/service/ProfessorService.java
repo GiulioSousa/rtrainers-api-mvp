@@ -10,6 +10,7 @@ import com.rtrainers.api.repository.SessaoRepository;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -27,16 +28,16 @@ public class ProfessorService {
         this.sessaoRepository = sessaoRepository;
     }
 
-    public List<AgendaDTO> buscarAgendaPorProfessor(Integer professorId) throws IOException {
-        List<Agenda> agendas = agendaRepository.buscarPorProfessor(professorId);
+    public List<AgendaDTO> buscarAgendaPorProfessor(String nomeProfessor) throws IOException {
+        List<Agenda> agendas = agendaRepository.buscarPorProfessor(nomeProfessor);
 
         return agendas.stream().map(agenda -> {
             AlunoDTO alunoDTO = null;
             try {
-                Aluno aluno = alunoRepository.buscarPorId(agenda.getAlunoId());
+                Aluno aluno = alunoRepository.buscarPorNome(agenda.getNomeAluno());
                 if (aluno != null) {
                     alunoDTO = new AlunoDTO(
-                            aluno.getId(),
+                            null,
                             aluno.getNome(),
                             aluno.getEstagio(),
                             aluno.getLesao(),
@@ -49,21 +50,21 @@ public class ProfessorService {
             }
 
             return new AgendaDTO(
-                    agenda.getId(),
-                    agenda.getAlunoId(),
-                    agenda.getProfessorId(),
+                    agenda.getNomeAluno(),
+                    agenda.getNomeProfessor(),
                     agenda.getTurno(),
                     agenda.getHorario(),
                     agenda.getDiaSemana(),
+                    agenda.getEstimuloTreino(),
                     alunoDTO);
         }).toList();
     }
 
-    public void registrarPsr(String intervalo, Integer psr) throws IOException {
-        sessaoRepository.registrarPsr(intervalo, psr);
-    }
+    public void registrarPsr(String nomeProfessor, String horario, String nomeAluno, LocalDate data, Integer psr) throws IOException {
+    sessaoRepository.registrarPsr(nomeProfessor, horario, nomeAluno, data, psr);
+}
 
-    public void registrarPse(String intervalo, Integer pse) throws IOException {
-        sessaoRepository.registrarPse(intervalo, pse);
-    }
+public void registrarPse(String nomeProfessor, String horario, String nomeAluno, LocalDate data, Integer pse) throws IOException {
+    sessaoRepository.registrarPse(nomeProfessor, horario, nomeAluno, data, pse);
+}
 }
