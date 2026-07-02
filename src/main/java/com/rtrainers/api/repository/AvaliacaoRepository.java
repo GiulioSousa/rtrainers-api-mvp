@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -53,13 +54,17 @@ public class AvaliacaoRepository {
             avaliacao.setNomeAluno(linha.get(0).toString());
             avaliacao.setNomeProfessor(linha.size() > 1 ? linha.get(1).toString() : "");
             avaliacao.setNotaAula(linha.size() > 2 && !linha.get(2).toString().isBlank()
-                    ? Integer.parseInt(linha.get(2).toString()) : null);
+                    ? Integer.parseInt(linha.get(2).toString())
+                    : null);
             avaliacao.setNotaProfessor(linha.size() > 3 && !linha.get(3).toString().isBlank()
-                    ? Integer.parseInt(linha.get(3).toString()) : null);
+                    ? Integer.parseInt(linha.get(3).toString())
+                    : null);
             avaliacao.setTags(linha.size() > 4 && !linha.get(4).toString().isBlank()
-                    ? Arrays.asList(linha.get(4).toString().split(",")) : new ArrayList<>());
+                    ? Arrays.asList(linha.get(4).toString().split(","))
+                    : new ArrayList<>());
             avaliacao.setData(linha.size() > 5 && !linha.get(5).toString().isBlank()
-                    ? LocalDate.parse(linha.get(5).toString()) : null);
+                    ? LocalDate.parse(linha.get(5).toString())
+                    : null);
             avaliacoes.add(avaliacao);
         }
 
@@ -68,22 +73,21 @@ public class AvaliacaoRepository {
 
     public boolean existeAvaliacaoNoDia(String nomeAluno, LocalDate data) throws IOException {
         return buscarTodos().stream()
-                .anyMatch(a -> a.getNomeAluno().equalsIgnoreCase(nomeAluno) 
-                && data.equals(a.getData()));
+                .anyMatch(a -> a.getNomeAluno().equalsIgnoreCase(nomeAluno)
+                        && data.equals(a.getData()));
     }
 
     public void salvar(Avaliacao avaliacao) throws IOException {
         ValueRange corpo = new ValueRange()
                 .setValues(Arrays.asList(Arrays.asList(
-                        "",
                         avaliacao.getNomeAluno(),
                         avaliacao.getNomeProfessor(),
                         avaliacao.getNotaAula(),
                         avaliacao.getNotaProfessor(),
                         String.join(",", avaliacao.getTags()),
-                        avaliacao.getData().toString())));
+                        avaliacao.getData().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))));
 
-                        String intervaloEscrita = abaAvaliacao + "!" + rangeAvaliacao;
+        String intervaloEscrita = abaAvaliacao + "!" + rangeAvaliacao;
 
         clienteSheets.spreadsheets().values()
                 .append(planilhaId, intervaloEscrita, corpo)
