@@ -64,15 +64,15 @@ public class AgendaRepository {
                 continue;
             }
 
-            String horario = obterValor(linha, 0);
-            String professor = obterValor(linha, 1);
-            String estimulo = obterValor(linha, 8);
+            String horario = obterValor(linha, 1);
+            String professor = obterValor(linha, 2);
+            String estimulo = obterValor(linha, 9);
 
             if (!horario.isBlank()) horarioAtual = horario;
             if (!professor.isBlank()) professorAtual = professor;
             if (!estimulo.isBlank()) estimuloAtual = estimulo;
 
-            String nomeAluno = obterValor(linha, 2);
+            String nomeAluno = obterValor(linha, 3);
             if (nomeAluno.isBlank()) {
                 continue;
             }

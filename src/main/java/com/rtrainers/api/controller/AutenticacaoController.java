@@ -23,7 +23,7 @@ public class AutenticacaoController {
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO requisicao) {
         List<Professor> professores = List.of(
                 new Professor(1, "Israel", "israel@rtrainers.com",
-                        "$2a$10$placeholder_hash_bcrypt", true));
+                        "$2a$10$HoSCrSLTVlYjBU35rqqyNe.CJL9ZFP/kb0bSWBFVzzSrHD5Qt5UBq", true));
 
         LoginResponseDTO resposta = autenticacaoService.autenticar(requisicao, professores);
         return ResponseEntity.ok(resposta);
